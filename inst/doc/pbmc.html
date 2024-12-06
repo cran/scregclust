@@ -409,7 +409,7 @@ the 6000 most variable genes are extracted as matrix <code>z</code>.</p>
 <span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; Second step: Get residuals using fitted parameters for 19168 genes</span></span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; Computing corrected count matrix for 19168 genes</span></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; Calculating gene attributes</span></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; Wall clock passed: Time difference of 11.65273 secs</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; Wall clock passed: Time difference of 6.448523 secs</span></span>
 <span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; Determine variable features</span></span>
 <span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; Centering data matrix</span></span>
 <span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; Set default assay to SCT</span></span>
@@ -460,7 +460,7 @@ for convenience.</p>
 <span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#   z, genesymbols, is_regulator, penalization = seq(0.1, 0.5, 0.05),</span></span>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#   n_modules = 10L, n_cycles = 50L, noise_threshold = 0.05</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># )</span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co"># saveRDS(fit, file = &quot;pbmc_scregclust.rds&quot;)</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co"># saveRDS(fit, file = &quot;datasets/pbmc_scregclust.rds&quot;)</span></span>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>url <span class="ot">&lt;-</span> <span class="fu">paste0</span>(</span>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="st">&quot;https://github.com/scmethods/scregclust/raw/main/datasets/&quot;</span>,</span>

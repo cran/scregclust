@@ -56,7 +56,7 @@ is_regulator <- out$is_regulator
 #   z, genesymbols, is_regulator, penalization = seq(0.1, 0.5, 0.05),
 #   n_modules = 10L, n_cycles = 50L, noise_threshold = 0.05
 # )
-# saveRDS(fit, file = "pbmc_scregclust.rds")
+# saveRDS(fit, file = "datasets/pbmc_scregclust.rds")
 
 url <- paste0(
   "https://github.com/scmethods/scregclust/raw/main/datasets/",

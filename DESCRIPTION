@@ -1,14 +1,15 @@
 Package: scregclust
 Title: Reconstructing the Regulatory Programs of Target Genes in
         scRNA-Seq Data
-Version: 0.1.10
+Version: 0.2.0
 Authors@R: c(
     person("Felix", "Held", ,"felix.held@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7679-7752")),
     person("Ida", "Larsson", ,"ida.larsson@igp.uu.se", role = c("aut"),
            comment = c(ORCID = "0000-0001-5422-4243")),
     person("Sven", "Nelander", ,"sven.nelander@igp.uu.se", role = c("aut"),
-           comment = c(ORCID = "0000-0003-1758-1262")))
+           comment = c(ORCID = "0000-0003-1758-1262")),
+    person("André", "Armatowski", role = c("ctb")))
 Description: Implementation of the scregclust algorithm
   described in Larsson, Held, et al. (2024) <doi:10.1038/s41467-024-53954-3>
   which reconstructs regulatory programs of target genes in scRNA-seq data.
@@ -29,10 +30,11 @@ URL: https://scmethods.github.io/scregclust/,
         https://github.com/scmethods/scregclust/
 BugReports: https://github.com/scmethods/scregclust/issues
 NeedsCompilation: yes
-Packaged: 2024-11-20 09:16:53 UTC; felixheld
+Packaged: 2024-12-06 14:06:57 UTC; felixheld
 Author: Felix Held [aut, cre] (<https://orcid.org/0000-0002-7679-7752>),
   Ida Larsson [aut] (<https://orcid.org/0000-0001-5422-4243>),
-  Sven Nelander [aut] (<https://orcid.org/0000-0003-1758-1262>)
+  Sven Nelander [aut] (<https://orcid.org/0000-0003-1758-1262>),
+  André Armatowski [ctb]
 Maintainer: Felix Held <felix.held@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-11-21 07:30:02 UTC
+Date/Publication: 2024-12-06 14:30:01 UTC

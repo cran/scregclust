@@ -95,6 +95,11 @@
 #'                           target gene.
 #' @param nowarnings When turned on then no warning messages are shown.
 #' @param verbose Whether to print progress.
+#' @param quick_mode Whether to use a reduced number of noise targets to speed
+#'                   up computations.
+#' @param quick_mode_percent A number in [0, 1) indicating the amount of
+#'                           noise targets to use in the re-allocation process
+#'                           if `quick_mode = TRUE`.
 #'
 #' @return A list with S3 class `scregclust` containing
 #'   \item{penalization}{The supplied `penalization` parameters}
@@ -105,7 +110,7 @@
 #'                                 modules.}
 #'   \item{split_indices}{either verbatim the vector given as input or
 #'                        a vector encoding the splits as NA = not included,
-#'                        1 = split 1 or 2 = split 2. Allows reproduciblity
+#'                        1 = split 1 or 2 = split 2. Allows reproducibility
 #'                        of data splits.}
 #'
 #' For each supplied penalization parameter, `results` contains a list with
@@ -192,10 +197,22 @@ scregclust <- function(expression,
                        compute_predictive_r2 = TRUE,
                        compute_silhouette = FALSE,
                        nowarnings = FALSE,
-                       verbose = TRUE) {
+                       verbose = TRUE,
+                       quick_mode = FALSE,
+                       quick_mode_percent = 0.1) {
   ###############################
   # START input validation
   ###############################
+
+  # This one needs to happen first so we can use it for input validation
+  if (!(
+    is.logical(verbose)
+    && length(verbose) == 1
+  )) {
+    cli::cli_abort(
+      "{.var verbose} needs to be TRUE or FALSE."
+    )
+  }
 
   if (verbose) {
     cat(paste0(cli::symbol$arrow_right, " Validating input"))
@@ -225,8 +242,6 @@ scregclust <- function(expression,
       "i" =
         "There needs to be one gene symbol for each gene in {.var expression}."
     ))
-  } else {
-    genesymbols <- genesymbols
   }
 
   if (!(
@@ -357,8 +372,6 @@ scregclust <- function(expression,
         "for each column of {.var expression}."
       )
     ))
-  } else {
-    sample_assignment <- sample_assignment
   }
 
   if (!(
@@ -372,8 +385,6 @@ scregclust <- function(expression,
     cli::cli_abort(
       "{.var center} needs to be TRUE or FALSE."
     )
-  } else {
-    center <- center
   }
 
   # If no split indices are provided, then the data split is determined
@@ -630,8 +641,6 @@ scregclust <- function(expression,
     cli::cli_abort(
       "{.var allocate_per_obs} needs to be TRUE or FALSE."
     )
-  } else {
-    allocate_per_obs <- allocate_per_obs
   }
 
   if (!(
@@ -678,8 +687,6 @@ scregclust <- function(expression,
       cli::cli_abort(
         "{.var use_kmeanspp_init} needs to be TRUE or FALSE."
       )
-    } else {
-      use_kmeanspp_init <- use_kmeanspp_init
     }
 
     if (!(
@@ -771,8 +778,6 @@ scregclust <- function(expression,
     cli::cli_abort(
       "{.var compute_predictive_r2} needs to be TRUE or FALSE."
     )
-  } else {
-    compute_predictive_r2 <- compute_predictive_r2
   }
 
   if (!(
@@ -786,23 +791,47 @@ scregclust <- function(expression,
     cli::cli_abort(
       "{.var compute_silhouette} needs to be TRUE or FALSE."
     )
-  } else {
-    compute_silhouette <- compute_silhouette
   }
 
   if (!(
-    is.logical(verbose)
-    && length(verbose) == 1
+    is.logical(quick_mode)
+    && length(quick_mode) == 1
   )) {
     if (verbose && cl) {
       cat("\n")
       cl <- FALSE
     }
     cli::cli_abort(
-      "{.var verbose} needs to be TRUE or FALSE."
+      "{.var quick_mode} needs to be TRUE or FALSE."
     )
   } else {
-    verbose <- verbose
+    # These checks are only necessary if quick_mode is active
+    if (!allocate_per_obs) {
+      if (verbose && cl) {
+        cat("\n")
+        cl <- FALSE
+      }
+      cli::cli_abort(
+        "{.var quick_mode} only available when {.var allocate_per_obs} is TRUE."
+      )
+    }
+
+    if (!(
+      is.numeric(quick_mode_percent)
+      && length(quick_mode_percent) == 1L
+      && quick_mode_percent >= 0
+      && quick_mode_percent < 1
+    )) {
+      if (verbose && cl) {
+        cat("\n")
+        cl <- FALSE
+      }
+      cli::cli_abort(
+        "{.var quick_mode_percent} needs to be numeric in [0, 1)."
+      )
+    } else {
+      quick_mode_percent <- as.double(quick_mode_percent)
+    }
   }
 
   if (verbose) {
@@ -1085,6 +1114,13 @@ scregclust <- function(expression,
 
   # Pre-compute cross-correlation matrices
   cross_corr1 <- fast_cor(z1_target_centered, z1_reg_scaled)
+
+  # Store a copy of abs correlation matrix if quick_mode == T for
+  # the sub-selection of noise targets in the re-allocation step
+  if (quick_mode) {
+    abs_corr_matrix <- abs(cross_corr1)
+  }
+
   # cross_corr2 <- fast_cor(z2_target_centered, z2_reg_scaled)
 
   # Initial module allocation
@@ -1193,6 +1229,12 @@ scregclust <- function(expression,
         cli::col_blue("{penalization[l]}")
       )
     }
+
+    # Intialize residual variance and r2 test matrix with standard values
+    # to not break functional code when using a subset of targets in
+    # quick_mode
+    r2_test <- matrix(0, nrow = n_target, ncol = n_modules)
+    resid_var <- matrix(1e6, nrow = n_target, ncol = n_modules)
 
     # On the last cycle we only re-estimate the regulator coefficients in Step 1
     last_cycle <- FALSE
@@ -1386,6 +1428,72 @@ scregclust <- function(expression,
           }
         }
 
+        ###############################################
+        ## START Step 1.5: Determining target genes  ##
+        ###############################################
+
+        # With quick_mode == TRUE only a subset of target genes are selected
+        # from cycle two and onward. For each of the targets inside the noise
+        # module we determine the largest (in absolute value) correlation to
+        # some active regulator. Then we take the top "quick_mode_percent" of
+        # the noise targets based on this value, together with the targets
+        # belonging to some active module in the previous step, and this makes
+        # up our collection of target genes  for which we calculated NNLS and
+        # do re-allocation
+
+        if (cycle != 1 && sum(models) != 0 && quick_mode) {
+          # Get current active regulators and targets for subsetting the
+          # correlation matrix
+          active_regulators <- which(apply(models, 1, sum) >= 1)
+          active_targets <- which(idx != -1)
+
+          # If we are in the last cycle we are not interested in any
+          # noise targets
+          if (last_cycle) {
+            filtered_targets <- active_targets
+          } else {
+            abs_corr_matrix_temp <- abs_corr_matrix[
+              -active_targets, active_regulators, drop = FALSE
+            ]
+
+            # Create a vector of maximal absolute correlation
+            max_abs_correlation <- apply(abs_corr_matrix_temp, 1, max)
+
+            # Find top quick_mode_percent
+            threshold <- quantile(max_abs_correlation, 1 - quick_mode_percent)
+
+            # Collect index in 1:len(noise_module) which should be active
+            top_percent_targets_in_temp <- which(
+              max_abs_correlation >= threshold
+            )
+
+            # Obtain the index in terms all targets 1:n_target
+            top_percent_targets <- setdiff(
+              seq_len(nrow(abs_corr_matrix)), active_targets
+            )[top_percent_targets_in_temp]
+
+            # Indices of the new targets in the range 1:n_target
+            filtered_targets <- c(active_targets, top_percent_targets)
+          }
+
+          # Create temporary copies containing only the new active targets
+          z1_target_centered_tmp <- z1_target_centered[, filtered_targets]
+          z1_target_sds_tmp <- z1_target_sds[filtered_targets]
+          z2_target_centered_tmp <- z2_target_centered[, filtered_targets]
+
+          # Change the size of n_targets for compatability with the new
+          # active targets
+          n_target <- ncol(z1_target_centered_tmp)
+        } else {
+          # If quick_mode = FALSE replace names for compatability
+          # with quick_mode
+          z1_target_centered_tmp <- z1_target_centered
+          z1_target_sds_tmp <- z1_target_sds
+          z2_target_centered_tmp <- z2_target_centered
+
+          # Filtered targets is now all targets
+          filtered_targets <- seq_len(ncol(z1_target_centered))
+        }
 
         ########################################################
         ## START Step 2: Determining target gene coefficients ##
@@ -1395,17 +1503,20 @@ scregclust <- function(expression,
         # is constant zero, since there is no intercept. The sum-of-squares
         # for each gene is then just the squared response.
         sum_squares_train <- matrix(
-          rep.int(colSums(z1_target_centered^2), n_modules),
+          rep.int(colSums(z1_target_centered_tmp^2), n_modules),
           nrow = n_target,
           ncol = n_modules
         )
 
         sum_squares_test <- matrix(
-          rep.int(colSums(z2_target_centered^2), n_modules),
+          rep.int(colSums(z2_target_centered_tmp^2), n_modules),
           nrow = n_target,
           ncol = n_modules
         )
 
+        # Note that it is correct here that z2_target does not have
+        # _tmp since adding _tmp would be incompatible with the size
+        # of sq_residuals_test
         if (allocate_per_obs && !last_cycle) {
           # Reset values in SSQ array
           reset_array(sq_residuals_test, z2_target_centered^2)
@@ -1468,30 +1579,37 @@ scregclust <- function(expression,
 
             beta_hat_nnls <- coef_nnls(
               z1_reg_scaled_cl_sign_corrected,
-              z1_target_centered %*% diag(
-                1 / z1_target_sds,
+              z1_target_centered_tmp %*% diag(
+                1 / z1_target_sds_tmp,
                 nrow = n_target,
                 ncol = n_target
               ),
               eps = tol_nnls, max_iter = max_optim_iter
-            )$beta * signs_cl * z1_target_sds
+            )$beta * signs_cl * z1_target_sds_tmp
 
             residuals_train_nnls <- (
-              z1_target_centered - z1_reg_scaled_cl %*% beta_hat_nnls
+              z1_target_centered_tmp - z1_reg_scaled_cl %*% beta_hat_nnls
             )
             residuals_test_nnls <- (
-              z2_target_centered - z2_reg_scaled_cl %*% beta_hat_nnls
+              z2_target_centered_tmp - z2_reg_scaled_cl %*% beta_hat_nnls
             )
 
             # NNLS squared residuals, SSQ and R-square
             if (allocate_per_obs && !last_cycle) {
-              sq_residuals_test[j, , ] <- residuals_test_nnls^2
+              sq_residuals_test[j, , filtered_targets] <- residuals_test_nnls^2
             }
             sum_squares_test[, j] <- colSums(residuals_test_nnls^2)
             sum_squares_train[, j] <- colSums(residuals_train_nnls^2)
 
             if (last_cycle) {
-              coeffs_final[[m]][[j]] <- beta_hat_nnls
+              # To be compatible with the labels we should provide coefficients
+              # for all targets. Those in the noise module we simply put to
+              # zero
+              coefficients <- matrix(
+                0, nrow = nrow(beta_hat_nnls), ncol = ncol(z1_target_centered)
+              )
+              coefficients[, filtered_targets] <- beta_hat_nnls
+              coeffs_final[[m]][[j]] <- coefficients
             }
           }
         }
@@ -1506,18 +1624,22 @@ scregclust <- function(expression,
             )
           ))
         }
-
-        r2_test <- 1 - (
-          sum_squares_test / colSums(z2_target_centered^2)
+        # Reset r2_test to be compatible with different active targets
+        r2_test[, ] <- 0
+        r2_test[filtered_targets, ] <- 1 - (
+          sum_squares_test / colSums(z2_target_centered_tmp^2)
         )
         best_r2[[cycle]] <- apply(r2_test, 1, max)
 
-        resid_var <- t(
-          t(sum_squares_train)
-          / (n1 - colSums(models))
+        # Reset resid_var to be compatible with different active targets
+        resid_var[, ] <- 1e6
+        resid_var[filtered_targets, ] <- t(
+          t(sum_squares_train) / (n1 - colSums(models))
         )
 
         if (last_cycle) {
+          # put final sigmas to be 0 for noise targets
+          resid_var[-filtered_targets, ] <- 0
           sigmas_final[[m]] <- sqrt(resid_var)
           r2_final[[m]] <- r2_test
           best_r2_final[[m]] <- best_r2[[cycle]]
@@ -1527,6 +1649,8 @@ scregclust <- function(expression,
 
       # Do not perform allocation on last cycle
       if (last_cycle) {
+        # reset n_target for remaining code
+        n_target <- ncol(z1_target_centered)
         break
       }
 
@@ -1977,7 +2101,9 @@ scregclust <- function(expression,
       penalization = penalization,
       results = results,
       initial_target_modules = k_start_cl,
-      split_indices = split_indices
+      split_indices = split_indices,
+      quick_mode = quick_mode,
+      quick_mode_percent = quick_mode_percent
     ),
     class = "scregclust"
   )
@@ -2146,7 +2272,7 @@ print.scregclust_output <- function(x, ...) {
 #'   \item{z2_target}{second data split, non-TF part}
 #'   \item{split_indices}{either verbatim the vector given as input or
 #'                        a vector encoding the splits as NA = not included,
-#'                        1 = split 1 or 2 = split 2. Allows reproduciblity
+#'                        1 = split 1 or 2 = split 2. Allows reproducibility
 #'                        of data splits.}
 #'
 #' @keywords internal
