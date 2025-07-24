@@ -1,3 +1,13 @@
+# scregclust 0.2.1
+
+- Added a vignette illustrating how to supply your own regulator list
+
+# scregclust 0.2.0-1
+
+- Regulator importance was computed unnecessarily if there is only one
+  regulator. A single regulator is always the most important regulator
+  for a cluster.
+
 # scregclust 0.2.0
 
 ## New features
@@ -14,3 +24,7 @@
 ## Minor changes
 
 - Added CRAN install instructions to the README
+
+# scregclust 0.1.0
+
+- First release on CRAN
