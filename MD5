@@ -1,6 +1,6 @@
-ea031b467c9fa1cf5944cd168458bb7a *DESCRIPTION
+a777ca765cd0e12d707ab84a112fd606 *DESCRIPTION
 798411c9314aede944c2b9d0f6286207 *NAMESPACE
-7413887c1caddb379a3c7c368e72c2db *NEWS.md
+608912272c023502befaf68ee751b5b6 *NEWS.md
 f2d87cf6b8d8512e1cc603f0e4bdf879 *R/RcppExports.R
 4f4f30816f46517bf91f32d7c3c0a290 *R/plotting.R
 198ff40d44f7674db5391db6248d3cdd *R/scregclust-package.R
@@ -9,14 +9,7 @@ f2d87cf6b8d8512e1cc603f0e4bdf879 *R/RcppExports.R
 441e86f392f50191a03927bb6a9592c3 *R/utils.R
 8be2a4dd42a0b6b2fa7d28e9b7da0193 *README.md
 1bf18d9c216b8d95033f0bd2fe2906b2 *build/partial.rdb
-cafe9251b55137c88460dc3c536e99b5 *build/vignette.rds
 1379e5d5e1eba842de58d8c8a75acefd *inst/CITATION
-7babcf1eedc5f1344de6ff869bc08714 *inst/doc/mouse.R
-fe084628187148ed4de009e97de697d1 *inst/doc/mouse.Rmd
-2ad207fa19831f28483df9b4eabafd32 *inst/doc/mouse.html
-1e265f47a77c087e7a6ab20033ce1ceb *inst/doc/pbmc.R
-bc097b0ec9ef9d8fa2d8e26b2f97afe4 *inst/doc/pbmc.Rmd
-e1115fb14b0115cd9bcabd6d4f35430c *inst/doc/pbmc.html
 50e9784001dabce479a7ce46320d3757 *man/alloc_array.Rd
 009b3651cf3df29b7f664c34000454be *man/available_results.Rd
 9379126b0132e16f76b25aeaf7a845e6 *man/cluster_overlap.Rd
@@ -59,5 +52,3 @@ bc06aa78c715f20f7e6f91ff81574675 *src/optim.cpp
 be5a77a02ae42b9045a260be21913615 *tests/testthat.R
 4489782d9a0017d017f148fcb253f8b0 *tests/testthat/test-constant-genes.R
 be4f1397b757d581a67b233e89c20e12 *tests/testthat/test-fast-cor.R
-fe084628187148ed4de009e97de697d1 *vignettes/mouse.Rmd
-bc097b0ec9ef9d8fa2d8e26b2f97afe4 *vignettes/pbmc.Rmd
