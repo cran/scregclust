@@ -1,8 +1,8 @@
-df8c406cd2bbb91af50a87245addc339 *DESCRIPTION
+3abe6ab26d08e717d1f7fbf5d0809b96 *DESCRIPTION
 798411c9314aede944c2b9d0f6286207 *NAMESPACE
 6225fec948f41eb1f38958422e8c2047 *NEWS.md
 f2d87cf6b8d8512e1cc603f0e4bdf879 *R/RcppExports.R
-4f4f30816f46517bf91f32d7c3c0a290 *R/plotting.R
+3e0c9ef70c10da374330a2ddd3902d6d *R/plotting.R
 198ff40d44f7674db5391db6248d3cdd *R/scregclust-package.R
 567dc21826b81c2bb3650303d06afbc0 *R/scregclust.R
 a2939fbad4e3305d3cf25ea3253c6b22 *R/sysdata.rda
@@ -47,7 +47,7 @@ e2d347f9ad519d45dd6bcf3703472671 *src/Makevars.win
 3d4da518e218882c5a0c80cb77e40031 *src/RcppExports.cpp
 3bee511e6e9890f7c5e17c3daff9332d *src/allocation.cpp
 95c3b20efb6de8e2878e93ce3ceb05ff *src/jaccard.cpp
-4cbf848fae5600fba2bb50c9b786571f *src/optim.cpp
+59bb4bdaf2bb4129e7cbb217d290f4af *src/optim.cpp
 684303994921b5c16c2abca403b03a44 *src/utils.cpp
 be5a77a02ae42b9045a260be21913615 *tests/testthat.R
 4489782d9a0017d017f148fcb253f8b0 *tests/testthat/test-constant-genes.R

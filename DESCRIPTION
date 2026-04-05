@@ -1,7 +1,7 @@
 Package: scregclust
 Title: Reconstructing the Regulatory Programs of Target Genes in
         scRNA-Seq Data
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Felix", "Held", ,"felix.held@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7679-7752")),
@@ -28,13 +28,13 @@ Config/testthat/edition: 3
 URL: https://scmethods.github.io/scregclust/,
         https://github.com/scmethods/scregclust/
 BugReports: https://github.com/scmethods/scregclust/issues
-Config/Needs/website: rmarkdown, quarto
+Config/Needs/website: quarto
 NeedsCompilation: yes
-Packaged: 2026-04-05 10:33:43 UTC; felixheld
+Packaged: 2026-04-05 22:02:46 UTC; felixheld
 Author: Felix Held [aut, cre] (ORCID: <https://orcid.org/0000-0002-7679-7752>),
   Ida Larsson [aut] (ORCID: <https://orcid.org/0000-0001-5422-4243>),
   Sven Nelander [aut] (ORCID: <https://orcid.org/0000-0003-1758-1262>),
   André Armatowski [ctb]
 Maintainer: Felix Held <felix.held@gmail.com>
 Repository: CRAN
-Date/Publication: 2026-04-05 10:50:02 UTC
+Date/Publication: 2026-04-05 22:50:02 UTC
