@@ -1,7 +1,7 @@
 Package: scregclust
 Title: Reconstructing the Regulatory Programs of Target Genes in
         scRNA-Seq Data
-Version: 0.2.2
+Version: 0.2.3
 Authors@R: c(
     person("Felix", "Held", ,"felix.held@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7679-7752")),
@@ -19,21 +19,22 @@ Encoding: UTF-8
 Depends: R (>= 4.1.0)
 Imports: Matrix, stats, methods, utils, reshape, igraph, graphics,
         grid, cli, prettyunits, ggplot2, rlang, Rcpp (>= 1.0.8)
-Suggests: testthat (>= 3.0.0)
+Suggests: testthat (>= 3.0.0), quarto, Seurat (>= 5.0.0), hdf5r,
+        glmGamPoi, GEOquery
 LinkingTo: Rcpp, RcppEigen
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 License: GPL (>= 3)
 Config/testthat/edition: 3
 URL: https://scmethods.github.io/scregclust/,
         https://github.com/scmethods/scregclust/
 BugReports: https://github.com/scmethods/scregclust/issues
-Config/Needs/website: rmarkdown
+Config/Needs/website: rmarkdown, quarto
 NeedsCompilation: yes
-Packaged: 2025-07-27 08:13:48 UTC; felixheld
+Packaged: 2026-04-05 10:33:43 UTC; felixheld
 Author: Felix Held [aut, cre] (ORCID: <https://orcid.org/0000-0002-7679-7752>),
   Ida Larsson [aut] (ORCID: <https://orcid.org/0000-0001-5422-4243>),
   Sven Nelander [aut] (ORCID: <https://orcid.org/0000-0003-1758-1262>),
   André Armatowski [ctb]
 Maintainer: Felix Held <felix.held@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-07-27 21:50:01 UTC
+Date/Publication: 2026-04-05 10:50:02 UTC

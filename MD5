@@ -1,14 +1,14 @@
-a777ca765cd0e12d707ab84a112fd606 *DESCRIPTION
+df8c406cd2bbb91af50a87245addc339 *DESCRIPTION
 798411c9314aede944c2b9d0f6286207 *NAMESPACE
-608912272c023502befaf68ee751b5b6 *NEWS.md
+6225fec948f41eb1f38958422e8c2047 *NEWS.md
 f2d87cf6b8d8512e1cc603f0e4bdf879 *R/RcppExports.R
 4f4f30816f46517bf91f32d7c3c0a290 *R/plotting.R
 198ff40d44f7674db5391db6248d3cdd *R/scregclust-package.R
 567dc21826b81c2bb3650303d06afbc0 *R/scregclust.R
-843a04d7b45510ddf567ba4ac0fbf224 *R/sysdata.rda
+a2939fbad4e3305d3cf25ea3253c6b22 *R/sysdata.rda
 441e86f392f50191a03927bb6a9592c3 *R/utils.R
 8be2a4dd42a0b6b2fa7d28e9b7da0193 *README.md
-1bf18d9c216b8d95033f0bd2fe2906b2 *build/partial.rdb
+f51ba7c8bc94d8cf1fd072b85c6e53ab *build/partial.rdb
 1379e5d5e1eba842de58d8c8a75acefd *inst/CITATION
 50e9784001dabce479a7ce46320d3757 *man/alloc_array.Rd
 009b3651cf3df29b7f664c34000454be *man/available_results.Rd
@@ -47,7 +47,7 @@ e2d347f9ad519d45dd6bcf3703472671 *src/Makevars.win
 3d4da518e218882c5a0c80cb77e40031 *src/RcppExports.cpp
 3bee511e6e9890f7c5e17c3daff9332d *src/allocation.cpp
 95c3b20efb6de8e2878e93ce3ceb05ff *src/jaccard.cpp
-bc06aa78c715f20f7e6f91ff81574675 *src/optim.cpp
+4cbf848fae5600fba2bb50c9b786571f *src/optim.cpp
 684303994921b5c16c2abca403b03a44 *src/utils.cpp
 be5a77a02ae42b9045a260be21913615 *tests/testthat.R
 4489782d9a0017d017f148fcb253f8b0 *tests/testthat/test-constant-genes.R
